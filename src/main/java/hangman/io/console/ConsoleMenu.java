@@ -41,19 +41,30 @@ public class ConsoleMenu {
         Game game = factory.create();
         renderer.printGameStarted();
 
-        while (game.isInProgress()) {
-            int errors = game.getErrorCount();
-            int attempts = game.getAttemptsLeft();
-            WordProgress progress = game.getWordProgress();
+        // начальный экран
+        renderSnapshot(game, true);
 
-            renderer.renderGameState(errors, attempts, progress);
+        while (game.isInProgress()) {
             processTurn(game);
+            renderSnapshot(game, game.isInProgress());
         }
 
-        boolean won = game.isWon();
-        String word = game.revealWord();
+        renderer.printGameResult(game.isWon(), game.revealWord());
+    }
 
-        renderer.printGameResult(won, word);
+    private void renderSnapshot(Game game, boolean askForInput) {
+        int errors = game.getErrorCount();
+        int attempts = game.getAttemptsLeft();
+        WordProgress progress = game.getWordProgress();
+
+        renderer.renderHangman(errors);
+
+        boolean showWordProgress = !game.isLost();
+        renderer.renderGameState(errors, attempts, progress, showWordProgress);
+
+        if (askForInput) {
+            renderer.printInputPrompt();
+        }
     }
 
     private void processTurn(Game game) {

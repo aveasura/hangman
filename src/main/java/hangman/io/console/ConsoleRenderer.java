@@ -5,14 +5,86 @@ import hangman.game.OpenedSlot;
 import hangman.game.Slot;
 import hangman.game.WordProgress;
 
+import java.util.List;
+
 public class ConsoleRenderer {
 
     private static final String MAIN_MENU = """
             1. Начать новую игру
             2. Выход""";
 
+    private static final List<String> HANGMAN_STATES = List.of(
+            """
+             +---+
+             |   |
+                 |
+                 |
+                 |
+                 |
+            =========
+            """,
+            """
+             +---+
+             |   |
+             O   |
+                 |
+                 |
+                 |
+            =========
+            """,
+            """
+             +---+
+             |   |
+             O   |
+             |   |
+                 |
+                 |
+            =========
+            """,
+            """
+             +---+
+             |   |
+             O   |
+            /|   |
+                 |
+                 |
+            =========
+            """,
+            """
+             +---+
+             |   |
+             O   |
+            /|\\  |
+                 |
+                 |
+            =========
+            """,
+            """
+             +---+
+             |   |
+             O   |
+            /|\\  |
+            /    |
+                 |
+            =========
+            """,
+            """
+             +---+
+             |   |
+             O   |
+            /|\\  |
+            / \\  |
+                 |
+            =========
+            """
+    );
+
     public void printMainMenu() {
         print(MAIN_MENU);
+    }
+
+    public void printInputPrompt() {
+        print("Введите букву");
     }
 
     public void printExitMessage() {
@@ -27,11 +99,13 @@ public class ConsoleRenderer {
         print("Игра начинается.");
     }
 
-    public void renderGameState(int errorCount, int attemptsLeft, WordProgress progress) {
+    public void renderGameState(int errorCount, int attemptsLeft, WordProgress progress, boolean showWordProgress) {
         print("Ошибок: " + errorCount);
         print("Попыток осталось: " + attemptsLeft);
-        print("Текущее состояние слова: " + format(progress));
-        print("Введите букву");
+
+        if (showWordProgress) {
+            print("Текущее состояние слова: " + format(progress));
+        }
     }
 
     private String format(WordProgress progress) {
@@ -42,7 +116,6 @@ public class ConsoleRenderer {
                 sb.append(" ");
             }
 
-            // паттерн matching
             switch (slot) {
                 case OpenedSlot opened -> sb.append(opened.letter());
                 case HiddenSlot ignored -> sb.append('*');
@@ -77,6 +150,11 @@ public class ConsoleRenderer {
 
     public void printSingleLetterRequired() {
         print("Введите ровно одну букву.");
+    }
+
+    public void renderHangman(int errors) {
+        String result = HANGMAN_STATES.get(errors);
+        print(result);
     }
 
     private void print(String text) {
