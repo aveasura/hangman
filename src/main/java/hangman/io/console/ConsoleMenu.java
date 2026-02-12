@@ -68,7 +68,7 @@ public class ConsoleMenu {
     }
 
     private void processTurn(Game game) {
-        char input = readSingleLetter();
+        char input = readSingleLetter(game);
         GuessResult result = game.guess(input);
 
         switch (result) {
@@ -88,7 +88,7 @@ public class ConsoleMenu {
         }
     }
 
-    private char readSingleLetter() {
+    private char readSingleLetter(Game game) {
         while (true) {
             String line = input();
 
@@ -97,12 +97,24 @@ public class ConsoleMenu {
                 continue;
             }
 
-            if (line.length() != 1 || !Character.isLetter(line.charAt(0))) {
+            if (line.length() != 1) {
                 renderer.printSingleLetterRequired();
                 continue;
             }
 
-            return line.charAt(0);
+            char c = Character.toLowerCase(line.charAt(0));
+
+            if (!Character.isLetter(c)) {
+                renderer.printSingleLetterRequired();
+                continue;
+            }
+
+            if (game.acceptsInput(c)) {
+                return c;
+
+            }
+
+            renderer.printWrongAlphabet();
         }
     }
 

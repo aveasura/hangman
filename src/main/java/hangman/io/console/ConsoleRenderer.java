@@ -108,22 +108,6 @@ public class ConsoleRenderer {
         }
     }
 
-    private String format(WordProgress progress) {
-        StringBuilder sb = new StringBuilder();
-
-        for (Slot slot : progress.slots()) {
-            if (!sb.isEmpty()) {
-                sb.append(" ");
-            }
-
-            switch (slot) {
-                case OpenedSlot opened -> sb.append(opened.letter());
-                case HiddenSlot ignored -> sb.append('*');
-            }
-        }
-        return sb.toString();
-    }
-
     public void printCorrectLetter() {
         print("Верно!");
     }
@@ -155,6 +139,26 @@ public class ConsoleRenderer {
     public void renderHangman(int errors) {
         String result = HANGMAN_STATES.get(errors);
         print(result);
+    }
+
+    public void printWrongAlphabet() {
+        print("Вводите только русские буквы (а-я, ё)");
+    }
+
+    private String format(WordProgress progress) {
+        StringBuilder sb = new StringBuilder();
+
+        for (Slot slot : progress.slots()) {
+            if (!sb.isEmpty()) {
+                sb.append(" ");
+            }
+
+            switch (slot) {
+                case OpenedSlot opened -> sb.append(opened.letter());
+                case HiddenSlot ignored -> sb.append('*');
+            }
+        }
+        return sb.toString();
     }
 
     private void print(String text) {

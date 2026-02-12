@@ -32,6 +32,10 @@ public class Game {
             throw new IllegalArgumentException("Поддерживаются только буквы");
         }
 
+        if (!acceptsInput(c)) {
+            throw new IllegalArgumentException("Поддерживаются только русские буквы (а-я, ё)");
+        }
+
         if (!usedChars.add(c)) {
             return GuessResult.ALREADY_USED;
         }
@@ -90,5 +94,13 @@ public class Game {
             throw new IllegalStateException("Нельзя раскрыть слово до завершения игры");
         }
         return word;
+    }
+
+    public boolean acceptsInput(char c) {
+        return isRussianLetter(c);
+    }
+
+    private boolean isRussianLetter(char c) {
+        return c == 'ё' || (c >= 'а' && c <= 'я');
     }
 }
