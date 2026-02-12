@@ -84,7 +84,7 @@ public class ConsoleRenderer {
     }
 
     public void printInputPrompt() {
-        print("Введите букву");
+        print("Введите русскую букву");
     }
 
     public void printExitMessage() {
@@ -133,7 +133,7 @@ public class ConsoleRenderer {
     }
 
     public void printSingleLetterRequired() {
-        print("Введите ровно одну букву.");
+        print("Введите ровно одну русскую букву.");
     }
 
     public void renderHangman(int errors) {
