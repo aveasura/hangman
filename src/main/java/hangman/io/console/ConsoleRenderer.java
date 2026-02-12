@@ -84,7 +84,7 @@ public class ConsoleRenderer {
     }
 
     public void printInputPrompt() {
-        print("Введите букву");
+        print("Введите русскую букву");
     }
 
     public void printExitMessage() {
@@ -106,22 +106,6 @@ public class ConsoleRenderer {
         if (showWordProgress) {
             print("Текущее состояние слова: " + format(progress));
         }
-    }
-
-    private String format(WordProgress progress) {
-        StringBuilder sb = new StringBuilder();
-
-        for (Slot slot : progress.slots()) {
-            if (!sb.isEmpty()) {
-                sb.append(" ");
-            }
-
-            switch (slot) {
-                case OpenedSlot opened -> sb.append(opened.letter());
-                case HiddenSlot ignored -> sb.append('*');
-            }
-        }
-        return sb.toString();
     }
 
     public void printCorrectLetter() {
@@ -149,12 +133,32 @@ public class ConsoleRenderer {
     }
 
     public void printSingleLetterRequired() {
-        print("Введите ровно одну букву.");
+        print("Введите ровно одну русскую букву.");
     }
 
     public void renderHangman(int errors) {
         String result = HANGMAN_STATES.get(errors);
         print(result);
+    }
+
+    public void printWrongAlphabet() {
+        print("Вводите только русские буквы (а-я, ё)");
+    }
+
+    private String format(WordProgress progress) {
+        StringBuilder sb = new StringBuilder();
+
+        for (Slot slot : progress.slots()) {
+            if (!sb.isEmpty()) {
+                sb.append(" ");
+            }
+
+            switch (slot) {
+                case OpenedSlot opened -> sb.append(opened.letter());
+                case HiddenSlot ignored -> sb.append('*');
+            }
+        }
+        return sb.toString();
     }
 
     private void print(String text) {
