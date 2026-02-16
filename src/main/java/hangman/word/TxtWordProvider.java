@@ -17,7 +17,7 @@ public class TxtWordProvider implements WordProvider {
 
     public TxtWordProvider(String wordsResource) {
         if (wordsResource == null || wordsResource.isBlank()) {
-            throw new IllegalArgumentException("Имя ресурса не должно быть пустым");
+            throw new IllegalArgumentException("The resource name must not be empty");
         }
         this.wordsResource = wordsResource;
     }
@@ -29,7 +29,7 @@ public class TxtWordProvider implements WordProvider {
         }
 
         if (words.isEmpty()) {
-            throw new IllegalStateException("Список слов пуст. Проверьте ресурс: " + wordsResource);
+            throw new IllegalStateException("The word list is empty. Check the resource.: " + wordsResource);
         }
 
         return words.get(ThreadLocalRandom.current().nextInt(words.size()));
@@ -40,7 +40,7 @@ public class TxtWordProvider implements WordProvider {
 
         try (InputStream is = cl.getResourceAsStream(wordsResource)) {
             if (is == null) {
-                throw new IllegalStateException("Ресурс не найден: " + wordsResource);
+                throw new IllegalStateException("Resource not found: " + wordsResource);
             }
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
@@ -53,7 +53,7 @@ public class TxtWordProvider implements WordProvider {
                 }
             }
         } catch (IOException e) {
-            throw new IllegalStateException("Ошибка чтения ресурса: " + wordsResource, e);
+            throw new IllegalStateException("Error reading resource: " + wordsResource, e);
         }
     }
 }

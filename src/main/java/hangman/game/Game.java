@@ -15,7 +15,7 @@ public class Game {
 
     public Game(String word) {
         if (word == null || word.isBlank()) {
-            throw new IllegalArgumentException("Слово не должно быть пустым");
+            throw new IllegalArgumentException("The word should not be empty");
         }
 
         // Защитная канонизация: trim + lower-case в Game на случай изменений WordProvider.
@@ -24,16 +24,16 @@ public class Game {
 
     public GuessResult guess(char input) {
         if (!isInProgress()) {
-            throw new IllegalStateException("Игра уже завершена");
+            throw new IllegalStateException("The game is already over");
         }
 
         char c = Character.toLowerCase(input);
         if (!Character.isLetter(c)) {
-            throw new IllegalArgumentException("Поддерживаются только буквы");
+            throw new IllegalArgumentException("Only letters are supported");
         }
 
         if (!acceptsInput(c)) {
-            throw new IllegalArgumentException("Поддерживаются только русские буквы (а-я, ё)");
+            throw new IllegalArgumentException("Only Russian letters are supported");
         }
 
         if (!usedChars.add(c)) {
@@ -91,7 +91,7 @@ public class Game {
 
     public String revealWord() {
         if (isInProgress()) {
-            throw new IllegalStateException("Нельзя раскрыть слово до завершения игры");
+            throw new IllegalStateException("The word cannot be revealed until the game is completed.");
         }
         return word;
     }

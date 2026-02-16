@@ -11,7 +11,7 @@ public class ConsoleInputProvider implements InputProvider {
     @Override
     public String nextLine() {
         if (!scanner.hasNextLine()) {
-            throw new IllegalStateException("Ввод недоступен: поток stdin закрыт");
+            throw new IllegalStateException("Input not available: stdin stream closed");
         }
         return scanner.nextLine().trim();
     }
