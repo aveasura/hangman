@@ -34,7 +34,7 @@ public class Game {
         this.validation = validation;
     }
 
-    public GuessResult guess(char input) {
+    public GuessResult estimate(char input) {
         if (!isInProgress()) {
             throw new IllegalStateException("The game is already over");
         }
@@ -48,7 +48,7 @@ public class Game {
             return GuessResult.WRONG_ALPHABET;
         }
 
-        if (!usedLetters.add(c)) {
+        if (usedLetters.contains(c)) {
             return GuessResult.ALREADY_USED;
         }
 
@@ -56,10 +56,25 @@ public class Game {
             return GuessResult.CORRECT;
         }
 
-        errorsCount++;
         return GuessResult.INCORRECT;
     }
 
+    public void apply(char input) {
+        GuessResult result = estimate(input);
+
+        if (result == GuessResult.NOT_A_LETTER || result == GuessResult.WRONG_ALPHABET || result == GuessResult.ALREADY_USED) {
+            return;
+        }
+
+        char c = Character.toLowerCase(input);
+        usedLetters.add(c);
+
+        if (result == GuessResult.INCORRECT) {
+            errorsCount++;
+        }
+    }
+
+    // todo
     /**
      * Вне домена скрытые буквы недоступны по типу:
      * HiddenSlot вообще не содержит символ.
@@ -70,7 +85,6 @@ public class Game {
 
         for (char c : word.toCharArray()) {
             boolean opened = revealAll || usedLetters.contains(c);
-            // todo переделать слоты
             slots.add(opened ? new OpenedSlot(c) : new HiddenSlot());
         }
 

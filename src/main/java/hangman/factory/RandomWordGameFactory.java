@@ -4,7 +4,7 @@ import hangman.io.LetterValidation;
 import hangman.game.Game;
 import hangman.word.WordProvider;
 
-public class RandomWordGameFactory implements GameFactory {
+public class RandomWordGameFactory implements GameFactory<Game> {
 
     private final WordProvider provider;
     private final LetterValidation validation;
@@ -16,7 +16,7 @@ public class RandomWordGameFactory implements GameFactory {
 
     @Override
     public Game create() {
-        String word = provider.getWord();// <- тут может?
+        String word = provider.getWord();
         return new Game(word, validation);
     }
 }

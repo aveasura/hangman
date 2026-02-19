@@ -7,11 +7,11 @@ import hangman.io.console.ConsoleRenderer;
 
 public class GameController {
 
-    private final GameFactory factory;
+    private final GameFactory<Game> factory;
     private final ConsoleRenderer renderer;
     private final UserInput input;
 
-    public GameController(GameFactory factory, ConsoleRenderer renderer, UserInput input) {
+    public GameController(GameFactory<Game> factory, ConsoleRenderer renderer, UserInput input) {
         this.factory = factory;
         this.renderer = renderer;
         this.input = input;
@@ -43,7 +43,8 @@ public class GameController {
 
     private void processTurn(Game game) {
         char guessChar = input.readSingleChar();
-        GuessResult result = game.guess(guessChar);
+        GuessResult result = game.estimate(guessChar);
+        game.apply(guessChar);
 
         switch (result) {
             case CORRECT -> renderer.printCorrectLetter();

@@ -1,7 +1,5 @@
 package hangman.io.console;
 
-import hangman.game.HiddenSlot;
-import hangman.game.OpenedSlot;
 import hangman.game.Slot;
 import hangman.game.WordProgress;
 
@@ -15,68 +13,68 @@ public class ConsoleRenderer {
 
     private static final List<String> HANGMAN_STATES = List.of(
             """
-             +---+
-             |   |
-                 |
-                 |
-                 |
-                 |
-            =========
-            """,
+                     +---+
+                     |   |
+                         |
+                         |
+                         |
+                         |
+                    =========
+                    """,
             """
-             +---+
-             |   |
-             O   |
-                 |
-                 |
-                 |
-            =========
-            """,
+                     +---+
+                     |   |
+                     O   |
+                         |
+                         |
+                         |
+                    =========
+                    """,
             """
-             +---+
-             |   |
-             O   |
-             |   |
-                 |
-                 |
-            =========
-            """,
+                     +---+
+                     |   |
+                     O   |
+                     |   |
+                         |
+                         |
+                    =========
+                    """,
             """
-             +---+
-             |   |
-             O   |
-            /|   |
-                 |
-                 |
-            =========
-            """,
+                     +---+
+                     |   |
+                     O   |
+                    /|   |
+                         |
+                         |
+                    =========
+                    """,
             """
-             +---+
-             |   |
-             O   |
-            /|\\  |
-                 |
-                 |
-            =========
-            """,
+                     +---+
+                     |   |
+                     O   |
+                    /|\\  |
+                         |
+                         |
+                    =========
+                    """,
             """
-             +---+
-             |   |
-             O   |
-            /|\\  |
-            /    |
-                 |
-            =========
-            """,
+                     +---+
+                     |   |
+                     O   |
+                    /|\\  |
+                    /    |
+                         |
+                    =========
+                    """,
             """
-             +---+
-             |   |
-             O   |
-            /|\\  |
-            / \\  |
-                 |
-            =========
-            """
+                     +---+
+                     |   |
+                     O   |
+                    /|\\  |
+                    / \\  |
+                         |
+                    =========
+                    """
     );
 
     public void printMainMenu() {
@@ -149,6 +147,7 @@ public class ConsoleRenderer {
         print("Вводите только русские буквы (а-я, ё)");
     }
 
+    // todo
     private String format(WordProgress progress) {
         StringBuilder sb = new StringBuilder();
 

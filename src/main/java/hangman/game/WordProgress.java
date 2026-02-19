@@ -2,11 +2,13 @@ package hangman.game;
 
 import java.util.List;
 
-public record WordProgress(List<Slot> slots) {
-    public WordProgress {
-        if (slots == null) {
-            throw new IllegalArgumentException("slots must not be null");
-        }
-        slots = List.copyOf(slots);
+// todo
+public class WordProgress {
+    private final List<Slot> slots;
+
+    public WordProgress(List<Slot> slots) {
+        this.slots = List.copyOf(slots);
     }
+
+
 }

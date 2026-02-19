@@ -1,8 +1,6 @@
 package hangman.factory;
 
-import hangman.game.Game;
+public interface GameFactory<T> {
 
-public interface GameFactory {
-
-    Game create();
+    T create();
 }
