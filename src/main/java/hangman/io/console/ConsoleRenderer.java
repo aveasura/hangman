@@ -132,6 +132,10 @@ public class ConsoleRenderer {
         print("Вы ничего не ввели. Попробуйте снова.");
     }
 
+    public void printOnlyLettersSupported() {
+        print("Поддерживаются только буквы");
+    }
+
     public void printSingleLetterRequired() {
         print("Введите ровно одну русскую букву.");
     }

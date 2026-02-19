@@ -1,5 +1,7 @@
 package hangman.game;
 
+import hangman.io.LetterValidation;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,13 +15,23 @@ public class Game {
     private final Set<Character> usedLetters = new HashSet<>();
     private int errorsCount = 0;
 
-    public Game(String word) {
+    private final LetterValidation validation;
+
+    public Game(String word, LetterValidation validation) {
         if (word == null || word.isBlank()) {
             throw new IllegalArgumentException("The word should not be empty");
         }
 
-        // Защитная канонизация: trim + lower-case в Game на случай изменений WordProvider.
-        this.word = word.trim().toLowerCase(Locale.ROOT);
+        if (validation == null) {
+            throw new IllegalArgumentException("Validation must not be null");
+        }
+
+        if (!word.equals(word.trim()) || !word.equals(word.toLowerCase(Locale.ROOT))) {
+            throw new IllegalArgumentException("The word must be canonized (trim + lower-case)");
+        }
+
+        this.word = word;
+        this.validation = validation;
     }
 
     public GuessResult guess(char input) {
@@ -29,11 +41,11 @@ public class Game {
 
         char c = Character.toLowerCase(input);
         if (!Character.isLetter(c)) {
-            throw new IllegalArgumentException("Only letters are supported");
+            return GuessResult.NOT_A_LETTER;
         }
 
-        if (!acceptsInput(c)) {
-            throw new IllegalArgumentException("Only Russian letters are supported");
+        if (!validation.isValid(c)) {
+            return GuessResult.WRONG_ALPHABET;
         }
 
         if (!usedLetters.add(c)) {
@@ -58,6 +70,7 @@ public class Game {
 
         for (char c : word.toCharArray()) {
             boolean opened = revealAll || usedLetters.contains(c);
+            // todo переделать слоты
             slots.add(opened ? new OpenedSlot(c) : new HiddenSlot());
         }
 

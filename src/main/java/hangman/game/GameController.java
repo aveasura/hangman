@@ -1,7 +1,7 @@
 package hangman.game;
 
 import hangman.factory.GameFactory;
-import hangman.io.InputProvider;
+import hangman.io.UserInput;
 import hangman.io.console.ConsoleRenderer;
 
 
@@ -9,15 +9,15 @@ public class GameController {
 
     private final GameFactory factory;
     private final ConsoleRenderer renderer;
-    private final InputProvider provider;
+    private final UserInput input;
 
-    public GameController(GameFactory factory, ConsoleRenderer renderer, InputProvider provider) {
+    public GameController(GameFactory factory, ConsoleRenderer renderer, UserInput input) {
         this.factory = factory;
         this.renderer = renderer;
-        this.provider = provider;
+        this.input = input;
     }
 
-    public void playGame() {
+    public void start() {
         Game game = factory.create();
         renderer.printGameStarted();
 
@@ -25,7 +25,7 @@ public class GameController {
         renderSnapshot(game, true);
 
         while (game.isInProgress()) {
-            processTurn();
+            processTurn(game);
             renderSnapshot(game, game.isInProgress());
         }
 
@@ -41,19 +41,16 @@ public class GameController {
         }
     }
 
-    public void exit() {
-        renderer.printExitMessage();
-    }
-
-
-    private void processTurn() {
-        char input = provider.readSingleLetter();
-        GuessResult result = game.guess(input);
+    private void processTurn(Game game) {
+        char guessChar = input.readSingleChar();
+        GuessResult result = game.guess(guessChar);
 
         switch (result) {
             case CORRECT -> renderer.printCorrectLetter();
             case INCORRECT -> renderer.printIncorrectLetter();
             case ALREADY_USED -> renderer.printAlreadyUsedLetter();
+            case NOT_A_LETTER -> renderer.printOnlyLettersSupported();
+            case WRONG_ALPHABET -> renderer.printWrongAlphabet();
         }
     }
 
