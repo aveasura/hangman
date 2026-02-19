@@ -10,7 +10,7 @@ public class Game {
     private static final int MAX_ERRORS = 6;
 
     private final String word;
-    private final Set<Character> usedChars = new HashSet<>();
+    private final Set<Character> usedLetters = new HashSet<>();
     private int errorsCount = 0;
 
     public Game(String word) {
@@ -36,7 +36,7 @@ public class Game {
             throw new IllegalArgumentException("Only Russian letters are supported");
         }
 
-        if (!usedChars.add(c)) {
+        if (!usedLetters.add(c)) {
             return GuessResult.ALREADY_USED;
         }
 
@@ -57,7 +57,7 @@ public class Game {
         boolean revealAll = !isInProgress();
 
         for (char c : word.toCharArray()) {
-            boolean opened = revealAll || usedChars.contains(c);
+            boolean opened = revealAll || usedLetters.contains(c);
             slots.add(opened ? new OpenedSlot(c) : new HiddenSlot());
         }
 
@@ -74,7 +74,7 @@ public class Game {
 
     public boolean isWon() {
         for (char c : word.toCharArray()) {
-            if (!usedChars.contains(c)) {
+            if (!usedLetters.contains(c)) {
                 return false;
             }
         }
@@ -94,13 +94,5 @@ public class Game {
             throw new IllegalStateException("The word cannot be revealed until the game is completed.");
         }
         return word;
-    }
-
-    public boolean acceptsInput(char c) {
-        return isRussianLetter(c);
-    }
-
-    private boolean isRussianLetter(char c) {
-        return c == 'ё' || (c >= 'а' && c <= 'я');
     }
 }

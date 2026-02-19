@@ -120,15 +120,15 @@ public class ConsoleRenderer {
         print("Вы уже вводили эту букву. Введите другую.");
     }
 
-    public void printGameResult(boolean won, String word) {
-        if (won) {
-            print("Вы выиграли! Загаданное слово: " + word);
-        } else {
-            print("Вы проиграли! Загаданное слово: " + word);
-        }
+    public void printWonGame(String word) {
+        print("Вы выиграли! Загаданное слово: " + word);
     }
 
-    public void printEmptyLine() {
+    public void printLoseGame(String word) {
+        print("Вы проиграли! Загаданное слово: " + word);
+    }
+
+    public void printIncorrectInput() {
         print("Вы ничего не ввели. Попробуйте снова.");
     }
 
