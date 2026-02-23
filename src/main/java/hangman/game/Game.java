@@ -1,67 +1,67 @@
 package hangman.game;
 
-import java.util.ArrayList;
+import hangman.validation.LetterValidation;
+
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 public class Game {
     private static final int MAX_ERRORS = 6;
 
-    private final String word;
-    private final Set<Character> usedChars = new HashSet<>();
+    private final Set<Character> usedLetters = new HashSet<>();
     private int errorsCount = 0;
 
-    public Game(String word) {
-        if (word == null || word.isBlank()) {
-            throw new IllegalArgumentException("The word should not be empty");
-        }
+    private final WordProgress progress;
+    private final LetterValidation validation;
 
-        // Защитная канонизация: trim + lower-case в Game на случай изменений WordProvider.
-        this.word = word.trim().toLowerCase(Locale.ROOT);
+    public Game(WordProgress progress, LetterValidation validation) {
+        this.progress = Objects.requireNonNull(progress, "progress must not be null");
+        this.validation = Objects.requireNonNull(validation, "validation must not be null");
     }
 
-    public GuessResult guess(char input) {
+    public GuessResult estimate(char input) {
         if (!isInProgress()) {
             throw new IllegalStateException("The game is already over");
         }
 
         char c = Character.toLowerCase(input);
         if (!Character.isLetter(c)) {
-            throw new IllegalArgumentException("Only letters are supported");
+            return GuessResult.NOT_A_LETTER;
         }
 
-        if (!acceptsInput(c)) {
-            throw new IllegalArgumentException("Only Russian letters are supported");
+        if (!validation.isValid(c)) {
+            return GuessResult.WRONG_ALPHABET;
         }
 
-        if (!usedChars.add(c)) {
+        if (usedLetters.contains(c)) {
             return GuessResult.ALREADY_USED;
         }
 
-        if (word.indexOf(c) >= 0) {
+        if (progress.contains(c)) {
             return GuessResult.CORRECT;
         }
 
-        errorsCount++;
         return GuessResult.INCORRECT;
     }
 
-    /**
-     * Вне домена скрытые буквы недоступны по типу:
-     * HiddenSlot вообще не содержит символ.
-     */
-    public WordProgress getWordProgress() {
-        List<Slot> slots = new ArrayList<>(word.length());
-        boolean revealAll = !isInProgress();
-
-        for (char c : word.toCharArray()) {
-            boolean opened = revealAll || usedChars.contains(c);
-            slots.add(opened ? new OpenedSlot(c) : new HiddenSlot());
+    public void apply(char input, GuessResult result) {
+        if (result == null) {
+            throw new IllegalArgumentException("GuessResult must not be null");
         }
 
-        return new WordProgress(slots);
+        if (result != GuessResult.CORRECT && result != GuessResult.INCORRECT) {
+            return;
+        }
+
+        char c = Character.toLowerCase(input);
+        usedLetters.add(c);
+        boolean hit = progress.reveal(c);
+
+        if (!hit) {
+            errorsCount++;
+        }
     }
 
     public int getErrorCount() {
@@ -72,13 +72,12 @@ public class Game {
         return !isWon() && !isLost();
     }
 
+    public WordView getWordProgress() {
+        return progress.view();
+    }
+
     public boolean isWon() {
-        for (char c : word.toCharArray()) {
-            if (!usedChars.contains(c)) {
-                return false;
-            }
-        }
-        return true;
+        return progress.isSolved();
     }
 
     public boolean isLost() {
@@ -89,18 +88,14 @@ public class Game {
         return Math.max(0, MAX_ERRORS - errorsCount);
     }
 
-    public String revealWord() {
+    public List<Character> getUsedLetters() {
+        return usedLetters.stream().sorted().toList();
+    }
+
+    public WordView revealWord() {
         if (isInProgress()) {
             throw new IllegalStateException("The word cannot be revealed until the game is completed.");
         }
-        return word;
-    }
-
-    public boolean acceptsInput(char c) {
-        return isRussianLetter(c);
-    }
-
-    private boolean isRussianLetter(char c) {
-        return c == 'ё' || (c >= 'а' && c <= 'я');
+        return progress.view();
     }
 }

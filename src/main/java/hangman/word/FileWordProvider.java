@@ -1,6 +1,7 @@
 package hangman.word;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,39 +9,40 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class TxtWordProvider implements WordProvider {
+public class FileWordProvider implements WordProvider {
 
     private final String wordsResource;
     private final List<String> words = new ArrayList<>();
 
-    public TxtWordProvider(String wordsResource) {
-        if (wordsResource == null || wordsResource.isBlank()) {
+    public FileWordProvider(String wordsResource) {
+        this.wordsResource = Objects.requireNonNull(wordsResource, "wordsResource must not be null");
+
+        if (this.wordsResource.isBlank()) {
             throw new IllegalArgumentException("The resource name must not be empty");
         }
-        this.wordsResource = wordsResource;
+
+        loadWordsFromClasspath();
+
+        if (words.isEmpty()) {
+            throw new IllegalStateException("Words resource is empty: " + this.wordsResource);
+        }
     }
 
     @Override
     public String getWord() {
-        if (words.isEmpty()) {
-            loadWordsFromClasspath();
-        }
-
-        if (words.isEmpty()) {
-            throw new IllegalStateException("The word list is empty. Check the resource.: " + wordsResource);
-        }
-
         return words.get(ThreadLocalRandom.current().nextInt(words.size()));
     }
 
     private void loadWordsFromClasspath() {
-        ClassLoader cl = TxtWordProvider.class.getClassLoader();
+        ClassLoader cl = FileWordProvider.class.getClassLoader();
 
         try (InputStream is = cl.getResourceAsStream(wordsResource)) {
             if (is == null) {
-                throw new IllegalStateException("Resource not found: " + wordsResource);
+                File file = new File(wordsResource).getAbsoluteFile();
+                throw new IllegalStateException("Resource not found: " + file);
             }
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
