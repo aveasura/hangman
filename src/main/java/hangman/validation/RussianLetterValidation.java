@@ -1,4 +1,4 @@
-package hangman.io;
+package hangman.validation;
 
 public class RussianLetterValidation implements LetterValidation {
 

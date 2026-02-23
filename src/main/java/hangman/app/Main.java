@@ -1,14 +1,16 @@
-package hangman;
+package hangman.app;
 
 import hangman.factory.GameFactory;
 import hangman.factory.RandomWordGameFactory;
-import hangman.game.GameController;
+import hangman.game.Game;
 import hangman.io.InputProvider;
-import hangman.io.LetterValidation;
-import hangman.io.RussianLetterValidation;
+import hangman.validation.LetterValidation;
+import hangman.io.Output;
+import hangman.validation.RussianLetterValidation;
 import hangman.io.UserInput;
 import hangman.io.console.ConsoleInputProvider;
 import hangman.io.console.ConsoleMenu;
+import hangman.io.console.ConsoleOutput;
 import hangman.io.console.ConsoleRenderer;
 import hangman.io.console.ConsoleUserInput;
 import hangman.word.CanonizationWordProvider;
@@ -22,8 +24,9 @@ public class Main {
         WordProvider words = new FileWordProvider("data.txt");
         CanonizationWordProvider canonization = new CanonizationWordProvider(words);
         LetterValidation validation = new RussianLetterValidation();
-        GameFactory factory = new RandomWordGameFactory(canonization, validation);
-        ConsoleRenderer renderer = new ConsoleRenderer();
+        GameFactory<Game> factory = new RandomWordGameFactory(canonization, validation);
+        Output output = new ConsoleOutput();
+        ConsoleRenderer renderer = new ConsoleRenderer(output);
 
         try (InputProvider provider = new ConsoleInputProvider();
              UserInput input = new ConsoleUserInput(renderer, provider, validation)) {
@@ -32,8 +35,8 @@ public class Main {
             ConsoleMenu menu = new ConsoleMenu(input, renderer, controller);
 
             menu.start();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (IllegalStateException e) {
+            System.err.printf("Game launch error: %s", e.getMessage());
         }
     }
 }

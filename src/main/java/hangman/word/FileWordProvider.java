@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class FileWordProvider implements WordProvider {
@@ -17,11 +18,17 @@ public class FileWordProvider implements WordProvider {
     private final List<String> words = new ArrayList<>();
 
     public FileWordProvider(String wordsResource) {
-        if (wordsResource == null || wordsResource.isBlank()) {
+        this.wordsResource = Objects.requireNonNull(wordsResource, "wordsResource must not be null");
+
+        if (this.wordsResource.isBlank()) {
             throw new IllegalArgumentException("The resource name must not be empty");
         }
-        this.wordsResource = wordsResource;
+
         loadWordsFromClasspath();
+
+        if (words.isEmpty()) {
+            throw new IllegalStateException("Words resource is empty: " + this.wordsResource);
+        }
     }
 
     @Override

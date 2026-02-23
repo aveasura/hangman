@@ -1,6 +1,6 @@
 package hangman.game;
 
-public class Slot {
+public final class Slot {
     private static final boolean CLOSED = false;
     private static final boolean OPEN = true;
 

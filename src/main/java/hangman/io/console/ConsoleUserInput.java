@@ -1,8 +1,10 @@
 package hangman.io.console;
 
 import hangman.io.InputProvider;
-import hangman.io.LetterValidation;
+import hangman.validation.LetterValidation;
 import hangman.io.UserInput;
+
+import java.util.Objects;
 
 public class ConsoleUserInput implements UserInput {
 
@@ -11,9 +13,9 @@ public class ConsoleUserInput implements UserInput {
     private final LetterValidation validation;
 
     public ConsoleUserInput(ConsoleRenderer renderer, InputProvider input, LetterValidation validation) {
-        this.renderer = renderer;
-        this.input = input;
-        this.validation = validation;
+        this.renderer = Objects.requireNonNull(renderer, "renderer must not be null");
+        this.input = Objects.requireNonNull(input, "input must not be null");
+        this.validation = Objects.requireNonNull(validation, "validation must not be null");
     }
 
     @Override
@@ -43,7 +45,7 @@ public class ConsoleUserInput implements UserInput {
 
             char c = Character.toLowerCase(line.charAt(0));
             if (!Character.isLetter(c)) {
-                renderer.printSingleLetterRequired();
+                renderer.printOnlyLettersSupported();
                 continue;
             }
 

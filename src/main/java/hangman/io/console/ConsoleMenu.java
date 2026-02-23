@@ -1,7 +1,9 @@
 package hangman.io.console;
 
-import hangman.game.GameController;
+import hangman.app.GameController;
 import hangman.io.UserInput;
+
+import java.util.Objects;
 
 public class ConsoleMenu {
 
@@ -13,9 +15,9 @@ public class ConsoleMenu {
     private final GameController controller;
 
     public ConsoleMenu(UserInput input, ConsoleRenderer renderer, GameController controller) {
-        this.input = input;
-        this.renderer = renderer;
-        this.controller = controller;
+        this.input = Objects.requireNonNull(input, "input must not be null");
+        this.renderer = Objects.requireNonNull(renderer, "renderer must not be null");
+        this.controller = Objects.requireNonNull(controller, "controller must not be null");
     }
 
     public void start() {

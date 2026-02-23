@@ -1,37 +1,24 @@
 package hangman.game;
 
-import hangman.io.LetterValidation;
+import hangman.validation.LetterValidation;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 public class Game {
     private static final int MAX_ERRORS = 6;
 
-    private final String word;
     private final Set<Character> usedLetters = new HashSet<>();
     private int errorsCount = 0;
 
+    private final WordProgress progress;
     private final LetterValidation validation;
 
-    public Game(String word, LetterValidation validation) {
-        if (word == null || word.isBlank()) {
-            throw new IllegalArgumentException("The word should not be empty");
-        }
-
-        if (validation == null) {
-            throw new IllegalArgumentException("Validation must not be null");
-        }
-
-        if (!word.equals(word.trim()) || !word.equals(word.toLowerCase(Locale.ROOT))) {
-            throw new IllegalArgumentException("The word must be canonized (trim + lower-case)");
-        }
-
-        this.word = word;
-        this.validation = validation;
+    public Game(WordProgress progress, LetterValidation validation) {
+        this.progress = Objects.requireNonNull(progress, "progress must not be null");
+        this.validation = Objects.requireNonNull(validation, "validation must not be null");
     }
 
     public GuessResult estimate(char input) {
@@ -52,43 +39,29 @@ public class Game {
             return GuessResult.ALREADY_USED;
         }
 
-        if (word.indexOf(c) >= 0) {
+        if (progress.contains(c)) {
             return GuessResult.CORRECT;
         }
 
         return GuessResult.INCORRECT;
     }
 
-    public void apply(char input) {
-        GuessResult result = estimate(input);
+    public void apply(char input, GuessResult result) {
+        if (result == null) {
+            throw new IllegalArgumentException("GuessResult must not be null");
+        }
 
-        if (result == GuessResult.NOT_A_LETTER || result == GuessResult.WRONG_ALPHABET || result == GuessResult.ALREADY_USED) {
+        if (result != GuessResult.CORRECT && result != GuessResult.INCORRECT) {
             return;
         }
 
         char c = Character.toLowerCase(input);
         usedLetters.add(c);
+        boolean hit = progress.reveal(c);
 
-        if (result == GuessResult.INCORRECT) {
+        if (!hit) {
             errorsCount++;
         }
-    }
-
-    // todo
-    /**
-     * Вне домена скрытые буквы недоступны по типу:
-     * HiddenSlot вообще не содержит символ.
-     */
-    public WordProgress getWordProgress() {
-        List<Slot> slots = new ArrayList<>(word.length());
-        boolean revealAll = !isInProgress();
-
-        for (char c : word.toCharArray()) {
-            boolean opened = revealAll || usedLetters.contains(c);
-            slots.add(opened ? new OpenedSlot(c) : new HiddenSlot());
-        }
-
-        return new WordProgress(slots);
     }
 
     public int getErrorCount() {
@@ -99,13 +72,12 @@ public class Game {
         return !isWon() && !isLost();
     }
 
+    public WordView getWordProgress() {
+        return progress.view();
+    }
+
     public boolean isWon() {
-        for (char c : word.toCharArray()) {
-            if (!usedLetters.contains(c)) {
-                return false;
-            }
-        }
-        return true;
+        return progress.isSolved();
     }
 
     public boolean isLost() {
@@ -116,10 +88,14 @@ public class Game {
         return Math.max(0, MAX_ERRORS - errorsCount);
     }
 
-    public String revealWord() {
+    public List<Character> getUsedLetters() {
+        return usedLetters.stream().sorted().toList();
+    }
+
+    public WordView revealWord() {
         if (isInProgress()) {
             throw new IllegalStateException("The word cannot be revealed until the game is completed.");
         }
-        return word;
+        return progress.view();
     }
 }

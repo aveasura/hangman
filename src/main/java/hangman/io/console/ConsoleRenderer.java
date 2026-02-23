@@ -1,11 +1,14 @@
 package hangman.io.console;
 
-import hangman.game.Slot;
-import hangman.game.WordProgress;
+import hangman.game.WordView;
+import hangman.io.Output;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ConsoleRenderer {
+
+    private static final char HIDDEN_CHAR = '*';
 
     private static final String MAIN_MENU = """
             1. Начать новую игру
@@ -77,94 +80,124 @@ public class ConsoleRenderer {
                     """
     );
 
+    private final Output output;
+
+    public ConsoleRenderer(Output output) {
+        this.output = Objects.requireNonNull(output, "output must not be null");
+    }
+
     public void printMainMenu() {
-        print(MAIN_MENU);
+        output.print(MAIN_MENU);
     }
 
     public void printInputPrompt() {
-        print("Введите русскую букву");
+        output.print("Введите русскую букву");
     }
 
     public void printExitMessage() {
-        print("Выход...");
+        output.print("Выход...");
     }
 
     public void printInvalidMenuChoice() {
-        print("Выберите цифру из предложенных.");
+        output.print("Выберите цифру из предложенных.");
     }
 
     public void printGameStarted() {
-        print("Игра начинается.");
+        output.print("Игра начинается.");
     }
 
-    public void renderGameState(int errorCount, int attemptsLeft, WordProgress progress, boolean showWordProgress) {
-        print("Ошибок: " + errorCount);
-        print("Попыток осталось: " + attemptsLeft);
+    public void renderTurnState(int errorCount, int attemptsLeft, WordView view, List<Character> usedLetters) {
+        printStats(errorCount, attemptsLeft);
+        printWordProgress(view);
+        printUsedLetters(usedLetters);
+    }
 
-        if (showWordProgress) {
-            print("Текущее состояние слова: " + format(progress));
-        }
+    public void printStats(int errorCount, int attemptsLeft) {
+        output.print("Ошибок: " + errorCount);
+        output.print("Попыток осталось: " + attemptsLeft);
+    }
+
+    public void printWordProgress(WordView view) {
+        output.print("Текущее состояние слова: " + formatWordCurrentState(view));
+    }
+
+    public void printUsedLetters(List<Character> usedLetters) {
+        output.print("Список введённых вами букв: " + formatUsedLetters(usedLetters));
     }
 
     public void printCorrectLetter() {
-        print("Верно!");
+        output.print("Верно!");
     }
 
     public void printIncorrectLetter() {
-        print("Неверно!");
+        output.print("Неверно!");
     }
 
     public void printAlreadyUsedLetter() {
-        print("Вы уже вводили эту букву. Введите другую.");
+        output.print("Вы уже вводили эту букву. Введите другую.");
     }
 
-    public void printWonGame(String word) {
-        print("Вы выиграли! Загаданное слово: " + word);
+    public void printWonGame(WordView view) {
+        String word = formatRevealedSecretWord(view);
+        output.print("Вы выиграли! Загаданное слово: " + word);
     }
 
-    public void printLoseGame(String word) {
-        print("Вы проиграли! Загаданное слово: " + word);
+    public void printLoseGame(WordView view) {
+        String word = formatRevealedSecretWord(view);
+        output.print("Вы проиграли! Загаданное слово: " + word);
     }
 
     public void printIncorrectInput() {
-        print("Вы ничего не ввели. Попробуйте снова.");
+        output.print("Вы ничего не ввели. Попробуйте снова.");
     }
 
     public void printOnlyLettersSupported() {
-        print("Поддерживаются только буквы");
+        output.print("Поддерживаются только буквы");
     }
 
     public void printSingleLetterRequired() {
-        print("Введите ровно одну русскую букву.");
+        output.print("Введите ровно одну русскую букву.");
     }
 
     public void renderHangman(int errors) {
-        String result = HANGMAN_STATES.get(errors);
-        print(result);
+        int idx = Math.min(errors, HANGMAN_STATES.size() - 1);
+        output.print(HANGMAN_STATES.get(idx));
     }
 
     public void printWrongAlphabet() {
-        print("Вводите только русские буквы (а-я, ё)");
+        output.print("Вводите только русские буквы (а-я, ё)");
     }
 
-    // todo
-    private String format(WordProgress progress) {
+    private String formatUsedLetters(List<Character> usedLetters) {
         StringBuilder sb = new StringBuilder();
-
-        for (Slot slot : progress.slots()) {
-            if (!sb.isEmpty()) {
-                sb.append(" ");
+        for (int i = 0; i < usedLetters.size(); i++) {
+            if (i > 0) {
+                sb.append(", ");
             }
-
-            switch (slot) {
-                case OpenedSlot opened -> sb.append(opened.letter());
-                case HiddenSlot ignored -> sb.append('*');
-            }
+            sb.append(usedLetters.get(i));
         }
+
         return sb.toString();
     }
 
-    private void print(String text) {
-        System.out.println(text);
+    private String formatWordCurrentState(WordView view) {
+        StringBuilder sb = new StringBuilder();
+
+        char[] letters = view.letters();
+        boolean[] open = view.open();
+        for (int i = 0; i < letters.length; i++) {
+            if (i > 0) {
+                sb.append(' ');
+            }
+
+            char ch = open[i] ? letters[i] : HIDDEN_CHAR;
+            sb.append(ch);
+        }
+
+        return sb.toString();
+    }
+
+    private String formatRevealedSecretWord(WordView view) {
+        return new String(view.letters());
     }
 }
