@@ -1,6 +1,6 @@
 package hangman.app;
 
-import hangman.factory.GameFactory;
+import hangman.factory.Factory;
 import hangman.game.Game;
 import hangman.game.GuessResult;
 import hangman.game.WordView;
@@ -13,11 +13,11 @@ import java.util.Objects;
 
 public class GameController {
 
-    private final GameFactory<Game> factory;
+    private final Factory<Game> factory;
     private final ConsoleRenderer renderer;
     private final UserInput input;
 
-    public GameController(GameFactory<Game> factory, ConsoleRenderer renderer, UserInput input) {
+    public GameController(Factory<Game> factory, ConsoleRenderer renderer, UserInput input) {
         this.factory = Objects.requireNonNull(factory, "factory must not be null");
         this.renderer = Objects.requireNonNull(renderer, "renderer must not be null");
         this.input = Objects.requireNonNull(input, "input must not be null");

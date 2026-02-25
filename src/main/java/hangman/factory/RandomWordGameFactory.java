@@ -7,7 +7,7 @@ import hangman.word.WordProvider;
 
 import java.util.Objects;
 
-public class RandomWordGameFactory implements GameFactory<Game> {
+public class RandomWordGameFactory implements Factory<Game> {
 
     private final WordProvider provider;
     private final LetterValidation validation;

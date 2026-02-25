@@ -1,6 +1,6 @@
 package hangman.app;
 
-import hangman.factory.GameFactory;
+import hangman.factory.Factory;
 import hangman.factory.RandomWordGameFactory;
 import hangman.game.Game;
 import hangman.io.InputProvider;
@@ -41,7 +41,7 @@ public class HangmanApplication implements AutoCloseable {
     private static ConsoleMenu createMenu(String wordsResource, ConsoleRenderer renderer, UserInput input, LetterValidation validation) {
         WordProvider words = new FileWordProvider(wordsResource);
         WordProvider canonization = new CanonizationWordProvider(words);
-        GameFactory<Game> factory = new RandomWordGameFactory(canonization, validation);
+        Factory<Game> factory = new RandomWordGameFactory(canonization, validation);
         GameController controller = new GameController(factory, renderer, input);
 
         return new ConsoleMenu(input, renderer, controller);

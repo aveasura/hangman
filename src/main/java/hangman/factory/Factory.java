@@ -1,6 +1,6 @@
 package hangman.factory;
 
-public interface GameFactory<T> {
+public interface Factory<T> {
 
     T create();
 }
